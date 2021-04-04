@@ -58,7 +58,6 @@ userSchema.methods.comparePassword = function(plainPassword, cb) {
     console.log("Comparing...");
     bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
         if (err) return cb(err);
-        
         cb(null, isMatch);
     })
 }
@@ -73,6 +72,20 @@ userSchema.methods.generateToken = function(cb) {
         if(err) return cb(err);
         cb(null, user);
     })
+}
+
+userSchema.statics.findByToken = function(token, cb) {
+    var user = this;
+
+    // Decode a token.
+    jwt.verify(token, 'secretToken', function(err, decoded) {
+        // Find the user using user id and 
+        // check whether it matches the token from client with the token from DB.
+        user.findOne({'_id': decoded, 'token': token}, function(err, user) {
+            if (err) return cb(err);
+            cb(null, user);
+        })
+    });
 }
 
 const User = mongoose.model('User', userSchema);
