@@ -10,17 +10,14 @@ let auth = (req, res, next) => {
     // Decrypt the token and find the user.
     User.findByToken(token, (err, user) => {
         if (err) throw err;
+        // If there is not the user, then the authentication is fail.
         if (!user) return res.json({ isAuth: false, error: true});
 
+        // If there is the user, then the authentication is success.
         req.token = token;
         req.user = user;
         next();
     })
-
-
-    // If there is the user, then the authentication is success.
-
-    // If there is not the user, then the authentication is fail.
 }
 
 module.exports = { auth };
